@@ -11,6 +11,39 @@ const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'migra
  * skipped, so it is safe to run on every boot. Returns the files it applied.
  */
 export async function runMigrations(m: Migrator): Promise<string[]> {
+  // Managed Postgres (e.g. DigitalOcean) runs PG15+, where the `public` schema
+  // no longer grants CREATE to roles other than its owner. Report who we are so
+  // boot logs are diagnosable, then make a best-effort claim of CREATE/USAGE on
+  // public. These GRANTs succeed when our role owns the schema (the common case
+  // once set up) and are harmless no-ops otherwise; a genuine lack of privilege
+  // still surfaces clearly on the first CREATE below.
+  try {
+    const { rows } = await m.query<{
+      current_user: string;
+      current_database: string;
+      has_create: boolean;
+    }>(
+      `SELECT current_user, current_database(),
+              has_schema_privilege(current_user, 'public', 'CREATE') AS has_create`,
+    );
+    const r = rows[0];
+    console.log(
+      `[migrate] connected as "${r?.current_user}" to "${r?.current_database}"; CREATE on public: ${r?.has_create}`,
+    );
+  } catch (err) {
+    console.log('[migrate] role introspection failed:', (err as Error).message);
+  }
+  for (const stmt of [
+    'GRANT USAGE ON SCHEMA public TO CURRENT_USER',
+    'GRANT CREATE ON SCHEMA public TO CURRENT_USER',
+  ]) {
+    try {
+      await m.exec(stmt);
+    } catch (err) {
+      console.log(`[migrate] "${stmt}" skipped: ${(err as Error).message}`);
+    }
+  }
+
   await m.exec(`
     CREATE TABLE IF NOT EXISTS schema_migrations (
       name       text PRIMARY KEY,
