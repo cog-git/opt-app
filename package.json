@@ -14,7 +14,6 @@
     "typecheck": "npm run typecheck -w apps/web && npm run typecheck -w apps/api && npm run typecheck -w packages/ui"
   },
   "engines": {
-    "node": ">=22",
-    "npm": ">=10"
+    "node": "22.11.0"
   }
 }
