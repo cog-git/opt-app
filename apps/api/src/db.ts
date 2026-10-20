@@ -49,10 +49,35 @@ function sslConfig(databaseUrl: string): pg.PoolConfig['ssl'] {
   return { rejectUnauthorized: false };
 }
 
+/**
+ * Remove any `sslmode`/`ssl` query params from the connection string.
+ *
+ * node-postgres parses the connection string LAST and lets its parsed `ssl`
+ * (derived from `sslmode`) override the `ssl` object passed to the Pool. DO's
+ * managed `DATABASE_URL` carries `sslmode=require`, which the current
+ * pg-connection-string treats as `verify-full` and so rejects the self-signed
+ * CA regardless of our `ssl` option. Stripping the param lets our explicit
+ * `ssl` config actually take effect.
+ */
+function stripUrlSslParams(databaseUrl: string): string {
+  try {
+    const u = new URL(databaseUrl);
+    u.searchParams.delete('sslmode');
+    u.searchParams.delete('ssl');
+    return u.toString();
+  } catch {
+    return databaseUrl;
+  }
+}
+
 export function getPool(): pg.Pool {
   if (!pool) {
     const databaseUrl = loadConfig().databaseUrl;
-    pool = new pg.Pool({ connectionString: databaseUrl, ssl: sslConfig(databaseUrl) });
+    const ssl = sslConfig(databaseUrl);
+    // When we supply an ssl object, strip sslmode from the URL so pg doesn't
+    // parse it back and clobber our config.
+    const connectionString = ssl ? stripUrlSslParams(databaseUrl) : databaseUrl;
+    pool = new pg.Pool({ connectionString, ssl });
   }
   return pool;
 }
