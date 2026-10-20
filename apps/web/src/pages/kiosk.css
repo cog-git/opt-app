@@ -1,0 +1,211 @@
+.kiosk {
+  min-height: 100vh;
+  /* Design rule: flat porcelain surface, NO gradients. */
+  background: var(--porcelain);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+
+.kiosk__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 40px;
+}
+.kiosk__ws {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.kiosk__ws b {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.kiosk__ws span {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.kiosk__topright {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.kiosk__clock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.1;
+}
+.kiosk__clock span {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.kiosk__clock small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.4px;
+  margin-bottom: 3px;
+}
+
+.kiosk__tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  padding: 6px 40px 0;
+  align-items: stretch;
+}
+
+/* Clock-only tenants show a single tile — keep it a comfortable width rather
+   than stretching the full row. */
+.kiosk__tiles--single {
+  grid-template-columns: 1fr;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.kiosk__floor {
+  margin: 24px 40px 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 22px 26px;
+  box-shadow: 0 6px 20px rgba(32, 36, 42, 0.05);
+}
+.kiosk__spacer {
+  flex: 1;
+}
+.kiosk__floor .h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.kiosk__floor .h b {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.kiosk__floor .h span {
+  font-size: 13px;
+  color: var(--rose-deep);
+  font-weight: 700;
+}
+.kiosk__chips {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.kiosk__chip {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  background: var(--porcelain);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 15px 10px 12px;
+}
+.kiosk__av {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--flora);
+}
+.kiosk__chip.rose .kiosk__av {
+  background: var(--rose);
+  color: #fff;
+}
+.kiosk__nm {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.kiosk__nm b {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.kiosk__nm span {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.kiosk__pdot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--flora-deep);
+  box-shadow: 0 0 0 4px rgba(112, 241, 129, 0.22);
+}
+
+.kiosk__foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 500;
+}
+.kiosk__exit {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.kiosk__exit:hover {
+  color: var(--sky-deep);
+  border-color: var(--sky);
+}
+
+@media (max-width: 720px) {
+  .kiosk__tiles {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Phones: drop the wide 40px gutters, shrink the header type, and let the
+   top bar wrap so the logo / workshop / clock stop crowding each other. */
+@media (max-width: 480px) {
+  .kiosk__top {
+    padding: 16px 18px;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .kiosk__ws { order: 3; flex-basis: 100%; }
+  .kiosk__clock span { font-size: 24px; }
+  .kiosk__tiles {
+    gap: 16px;
+    padding: 6px 18px 0;
+  }
+  .kiosk__floor {
+    margin: 16px 18px 0;
+    padding: 18px;
+  }
+  .kiosk__chips { gap: 8px; }
+  .kiosk__chip { width: 100%; }
+  .kiosk__foot {
+    padding: 16px;
+    font-size: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}

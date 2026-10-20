@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/*
+ * OPT Systems — locked design tokens.
+ * Rules: light/porcelain surfaces, dark ink text, NO dark green, NO gradients.
+ * Sky blue is the lead colour. Flora + rose are supporting only.
+ */
+:root {
+  /* Lead accent — primary buttons + logo */
+  --sky: #2f80ed;
+  --sky-deep: #1f63c4;
+  --sky-soft: #e9f1fd;
+
+  /* Supporting */
+  --flora: #70f181;
+  --flora-deep: #4bd463;
+  --rose: #ce8888;
+  --rose-deep: #9c4f4f;
+  --rose-deeper: #844242;
+  --rose-soft: #f6e6e6;
+
+  /* Surfaces & neutrals */
+  --porcelain: #f3f1ec;
+  --paper: #fff;
+  --grey-light: #e9e8e3;
+  --ink: #20242a;
+  --muted: #6c7178;
+  --line: #e4e2db;
+  --grey: #404040;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.opt-mono {
+  font-variant-numeric: tabular-nums;
+}

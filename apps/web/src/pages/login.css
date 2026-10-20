@@ -1,0 +1,150 @@
+.login {
+  min-height: 100vh;
+  background: var(--paper);
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+}
+
+/* left brand panel */
+.login__brand {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 60px;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: var(--porcelain);
+  border-right: 1px solid var(--line);
+}
+
+.login__dots {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+.login__dots i {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  display: block;
+}
+.login__dots .d1 {
+  background: var(--flora);
+}
+.login__dots .d2 {
+  background: var(--rose);
+}
+.login__dots .d3 {
+  background: var(--sky);
+}
+
+.login__brand h1 {
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.08;
+  max-width: 9ch;
+}
+.login__brand h1 em {
+  color: var(--sky);
+  font-style: normal;
+}
+.login__sub {
+  margin-top: 18px;
+  font-size: 17px;
+  color: var(--muted);
+  font-weight: 500;
+  max-width: 34ch;
+  line-height: 1.5;
+}
+.login__pills {
+  display: flex;
+  gap: 10px;
+  margin-top: 26px;
+  flex-wrap: wrap;
+}
+.login__ftr {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* right form */
+.login__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+.login__card {
+  width: 420px;
+}
+.login__kicker {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--rose-deep);
+}
+.login__card h2 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  margin-top: 8px;
+  color: var(--ink);
+}
+.login__lede {
+  color: var(--muted);
+  font-size: 15px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+.login__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+.login__remember {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  color: var(--grey);
+  font-weight: 500;
+  cursor: pointer;
+}
+.login__remember .box {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--line);
+  background: var(--paper);
+  margin: 0;
+  accent-color: var(--sky);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.login__link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sky-deep);
+  text-decoration: none;
+}
+.login__foot {
+  margin-top: 22px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+  font-weight: 500;
+}
+
+@media (max-width: 860px) {
+  .login {
+    grid-template-columns: 1fr;
+  }
+  .login__brand {
+    display: none;
+  }
+}

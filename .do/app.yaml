@@ -1,0 +1,77 @@
+# DigitalOcean App Platform spec for the OPT demo/new build.
+# Deploy:  doctl apps create --spec .do/app.yaml   (first time)
+#          doctl apps update <APP_ID> --spec .do/app.yaml   (thereafter)
+#
+# PREREQS (see opt_deployment_do.md):
+#  - Source must live in a Git repo DO can read (set repo/branch below) OR
+#    switch each component to a `dockerfile_path` / container image.
+#  - Two DNS records added in Cloudflare (CNAME demo + demo-api -> the app).
+#  - JWT_SECRET set as an encrypted app-level secret (NOT committed).
+#
+# Domains assume subdomain "demo" — change to new./staging. if Ryan prefers.
+
+name: opt-new
+region: lon
+
+databases:
+  - name: opt-db
+    engine: PG
+    version: "16"
+    production: false          # dev-size managed Postgres; bump when it goes live
+
+services:
+  - name: api
+    # --- source: point at the repo DO can see ---
+    github:
+      repo: REPLACE_WITH/opt-app     # e.g. ryancrossey/opt-app
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    environment_slug: node-js
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    http_port: 4000
+    # install workspace deps, build the api, run migrations, then boot
+    build_command: npm ci && npm run build -w apps/api
+    run_command: node apps/api/dist/cli.js migrate && node apps/api/dist/server.js
+    health_check:
+      http_path: /health
+    routes:
+      - path: /                # served on its own subdomain (demo-api.*)
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4000"
+      - key: DATABASE_URL
+        value: ${opt-db.DATABASE_URL}
+        scope: RUN_AND_BUILD_TIME
+      - key: JWT_SECRET
+        value: ${JWT_SECRET}          # app-level encrypted secret
+        scope: RUN_TIME
+      - key: CORS_ORIGIN
+        value: https://new.optsystemsltd.com
+        scope: RUN_TIME
+
+static_sites:
+  - name: web
+    github:
+      repo: REPLACE_WITH/opt-app
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    build_command: npm ci && npm run build -w packages/ui && npm run build -w apps/web
+    output_dir: apps/web/dist
+    catchall_document: index.html   # SPA fallback for client-side routing
+    envs:
+      - key: VITE_API_URL
+        value: https://new-api.optsystemsltd.com
+        scope: BUILD_TIME
+
+domains:
+  - domain: new.optsystemsltd.com
+    type: PRIMARY
+    # maps to the static site (web)
+  - domain: new-api.optsystemsltd.com
+    type: ALIAS
+    # maps to the api service

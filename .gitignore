@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+.pglite
+.env
+.env.local
+*.local
+.DS_Store
+*.log
+npm-debug.log*
+coverage
+.vite
