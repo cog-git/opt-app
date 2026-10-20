@@ -23,7 +23,7 @@ services:
   - name: api
     # --- source: point at the repo DO can see ---
     github:
-      repo: REPLACE_WITH/opt-app     # e.g. ryancrossey/opt-app
+      repo: cog-git/opt-app     # e.g. ryancrossey/opt-app
       branch: main
       deploy_on_push: true
     source_dir: /
@@ -56,7 +56,7 @@ services:
 static_sites:
   - name: web
     github:
-      repo: REPLACE_WITH/opt-app
+      repo: cog-git/opt-app
       branch: main
       deploy_on_push: true
     source_dir: /

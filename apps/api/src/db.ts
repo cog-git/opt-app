@@ -28,9 +28,31 @@ pg.types.setTypeParser(1184, (v) => (v == null ? v : new Date(v).toISOString()))
 
 let pool: pg.Pool | null = null;
 
+/**
+ * Work out the TLS settings for the pool.
+ *
+ * DigitalOcean managed Postgres presents a self-signed CA, so node-postgres'
+ * default verification rejects the connection with SELF_SIGNED_CERT_IN_CHAIN
+ * and the API crashes on boot before it can run migrations. If the DO CA
+ * certificate is supplied (DATABASE_CA_CERT), we verify against it properly;
+ * otherwise, for any non-local database we fall back to an encrypted-but-
+ * unverified connection so the app can still boot. Local dev (localhost) keeps
+ * SSL off entirely.
+ */
+function sslConfig(databaseUrl: string): pg.PoolConfig['ssl'] {
+  const isLocal = /@(localhost|127\.0\.0\.1)[:/]/.test(databaseUrl);
+  if (isLocal) return undefined;
+
+  const ca = process.env.DATABASE_CA_CERT;
+  if (ca) return { ca, rejectUnauthorized: true };
+
+  return { rejectUnauthorized: false };
+}
+
 export function getPool(): pg.Pool {
   if (!pool) {
-    pool = new pg.Pool({ connectionString: loadConfig().databaseUrl });
+    const databaseUrl = loadConfig().databaseUrl;
+    pool = new pg.Pool({ connectionString: databaseUrl, ssl: sslConfig(databaseUrl) });
   }
   return pool;
 }
