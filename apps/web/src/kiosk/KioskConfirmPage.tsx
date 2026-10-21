@@ -101,7 +101,7 @@ export function KioskConfirmPage() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '26px 40px',
       }}>
-        <Logo color="var(--sky)" height={32} />
+        <Logo color="var(--flora)" height={32} />
         {phase === 'confirm' && (
           <button
             onClick={() => navigate('/kiosk/verify')}

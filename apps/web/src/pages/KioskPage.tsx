@@ -46,7 +46,7 @@ export function KioskPage() {
   return (
     <div className="kiosk">
       <header className="kiosk__top">
-        <Logo color="var(--sky)" height={32} />
+        <Logo color="var(--flora)" height={32} />
         <div className="kiosk__ws">
           <b>Fabrication Workshop</b>
           <span>Acme Farm Group</span>

@@ -201,7 +201,7 @@ export function AdminLayout() {
         {/* Top bar */}
         <header className="admin__top">
           <div className="admin__top-left">
-            <Logo color="var(--sky)" height={28} />
+            <Logo color="var(--flora)" height={28} />
             <span className="admin__top-title">Admin console</span>
           </div>
           <div className="admin__orgswitch">

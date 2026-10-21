@@ -3,15 +3,15 @@
 /*
  * OPT Systems — locked design tokens.
  * Rules: light/porcelain surfaces, dark ink text, NO dark green, NO gradients.
- * Sky blue is the lead colour. Flora + rose are supporting only.
+ * Sky blue is the lead colour for buttons/accents. Flora green is the logo colour.
  */
 :root {
-  /* Lead accent — primary buttons + logo */
+  /* Lead accent — primary buttons */
   --sky: #2f80ed;
   --sky-deep: #1f63c4;
   --sky-soft: #e9f1fd;
 
-  /* Supporting */
+  /* Logo + supporting */
   --flora: #70f181;
   --flora-deep: #4bd463;
   --rose: #ce8888;

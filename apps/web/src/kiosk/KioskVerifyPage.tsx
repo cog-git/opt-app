@@ -150,7 +150,7 @@ export function KioskVerifyPage() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--porcelain)', display: 'flex', flexDirection: 'column' }}>
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '26px 40px' }}>
-        <Logo color="var(--sky)" height={32} />
+        <Logo color="var(--flora)" height={32} />
         <button
           onClick={() => navigate('/kiosk')}
           style={{
