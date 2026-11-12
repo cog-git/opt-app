@@ -1,8 +1,8 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { JwtClaims } from '../types.js';
 import { hashPassword, verifyPassword } from '../lib/password.js';
-import { findTenantBySubdomain } from '../repos/tenants.js';
-import { findUserByEmail, getUser, updateUser } from '../repos/users.js';
+import { findTenantBySubdomain, getTenant } from '../repos/tenants.js';
+import { acceptInvite, findInviteByToken, findUserByEmail, getUser, updateUser } from '../repos/users.js';
 import { toPublicUser } from '../repos/mappers.js';
 import { logActivity } from '../repos/activity.js';
 import { checkLogin, recordFailure, recordSuccess } from '../lib/loginThrottle.js';
@@ -26,6 +26,11 @@ interface LoginBody {
 interface ChangePasswordBody {
   currentPassword: string;
   newPassword: string;
+}
+
+interface AcceptInviteBody {
+  token: string;
+  password: string;
 }
 
 export async function authRoutes(app: FastifyInstance) {
@@ -56,7 +61,8 @@ export async function authRoutes(app: FastifyInstance) {
       if (!tenant || tenant.status !== 'active') return invalid();
 
       const user = await findUserByEmail(app.db, tenant.id, email);
-      if (!user) return invalid();
+      // No passwordHash means an invite that hasn't been accepted yet.
+      if (!user || !user.passwordHash) return invalid();
 
       const ok = await verifyPassword(password, user.passwordHash);
       if (!ok) return invalid();
@@ -109,7 +115,9 @@ export async function authRoutes(app: FastifyInstance) {
       }
 
       const user = await getUser(app.db, req.user.tenantId, req.user.sub);
-      if (!user || user.archivedAt) return reply.code(401).send({ error: 'unauthorized' });
+      if (!user || user.archivedAt || !user.passwordHash) {
+        return reply.code(401).send({ error: 'unauthorized' });
+      }
 
       const ok = await verifyPassword(currentPassword, user.passwordHash);
       if (!ok) return reply.code(403).send({ error: 'current password is incorrect' });
@@ -127,6 +135,69 @@ export async function authRoutes(app: FastifyInstance) {
       });
 
       return reply.send({ ok: true });
+    },
+  );
+
+  // Looks up an organisation-invite token so the accept-invite page can greet
+  // the invitee by name before they set a password. No auth — the token
+  // itself (a 32-byte random value) is the credential.
+  app.get<{ Params: { token: string } }>(
+    '/auth/invite/:token',
+    async (req, reply) => {
+      const invite = await findInviteByToken(app.db, req.params.token);
+      if (!invite) {
+        return reply.code(404).send({ error: 'This invite link is invalid or has expired.' });
+      }
+      return reply.send({
+        org: invite.org,
+        subdomain: invite.subdomain,
+        email: invite.email,
+        displayName: invite.displayName,
+      });
+    },
+  );
+
+  app.post<{ Body: AcceptInviteBody }>(
+    '/auth/accept-invite',
+    async (req, reply) => {
+      const { token, password } = req.body ?? ({} as AcceptInviteBody);
+      if (!token || !password) {
+        return reply.code(400).send({ error: 'token and password are required' });
+      }
+      if (password.length < 8) {
+        return reply.code(400).send({ error: 'password must be at least 8 characters' });
+      }
+
+      const invite = await findInviteByToken(app.db, token);
+      if (!invite) {
+        return reply.code(404).send({ error: 'This invite link is invalid or has expired.' });
+      }
+
+      await acceptInvite(app.db, invite.userId, await hashPassword(password));
+      await logActivity(app.db, {
+        tenantId: invite.tenantId,
+        actorId: invite.userId,
+        actorRole: 'owner',
+        action: 'user.accept_invite',
+        entityType: 'user',
+        entityId: invite.userId,
+      });
+
+      // Sign them straight in so the UI can land on /admin immediately.
+      const tenant = await getTenant(app.db, invite.tenantId);
+      const user = await getUser(app.db, invite.tenantId, invite.userId);
+      if (!tenant || !user) {
+        return reply.code(500).send({ error: 'could not complete sign-in' });
+      }
+      const claims: JwtClaims = {
+        sub: user.id,
+        tenantId: tenant.id,
+        role: user.role,
+        isPlatformAdmin: user.isPlatformAdmin,
+      };
+      const jwtToken = await reply.jwtSign(claims, { expiresIn: app.config.jwtExpiresIn });
+
+      return reply.send({ token: jwtToken, tokenType: 'Bearer', user: toPublicUser(user), tenant });
     },
   );
 }

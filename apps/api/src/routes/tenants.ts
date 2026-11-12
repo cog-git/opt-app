@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import type { TenantStatus, TenantTier } from '../types.js';
 import { requirePlatformAdmin } from '../plugins/auth.js';
@@ -9,17 +10,23 @@ import {
   updateTenantStatus,
   updateTenantTier,
 } from '../repos/tenants.js';
+import { createInvitedOwner } from '../repos/users.js';
 import { logActivity } from '../repos/activity.js';
+import { sendInviteEmail } from '../lib/mailer.js';
 
 interface CreateOrgBody {
   org: string;
   subdomain: string;
   tier?: TenantTier;
+  contactName: string;
+  contactEmail: string;
 }
 
 const TIERS: TenantTier[] = ['clockin', 'production'];
 const STATUSES: TenantStatus[] = ['active', 'paused', 'locked'];
 const SUBDOMAIN_RE = /^[a-z0-9-]+$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 /**
  * Platform organisation management — the office console's Organisations page.
@@ -40,9 +47,12 @@ export async function tenantRoutes(app: FastifyInstance) {
     '/orgs',
     { preHandler: [app.authenticate, requirePlatformAdmin()] },
     async (req, reply) => {
-      const { org, subdomain, tier } = req.body ?? ({} as CreateOrgBody);
-      if (!org || !subdomain) {
-        return reply.code(400).send({ error: 'org and subdomain are required' });
+      const { org, subdomain, tier, contactName, contactEmail } =
+        req.body ?? ({} as CreateOrgBody);
+      if (!org || !subdomain || !contactName || !contactEmail) {
+        return reply
+          .code(400)
+          .send({ error: 'org, subdomain, contactName and contactEmail are required' });
       }
       if (!SUBDOMAIN_RE.test(subdomain.trim().toLowerCase())) {
         return reply
@@ -52,7 +62,31 @@ export async function tenantRoutes(app: FastifyInstance) {
       if (tier !== undefined && !TIERS.includes(tier)) {
         return reply.code(400).send({ error: 'invalid tier' });
       }
-      const tenant = await createTenant(app.db, { org, subdomain, tier });
+      if (!EMAIL_RE.test(contactEmail.trim())) {
+        return reply.code(400).send({ error: 'contactEmail is not a valid email address' });
+      }
+
+      const tenant = await createTenant(app.db, { org, subdomain, tier, contactName, contactEmail });
+
+      // The main contact becomes the org's owner, invited by email rather than
+      // given a password up front — see migrations/010_org_invite.sql.
+      const inviteToken = randomBytes(32).toString('hex');
+      const owner = await createInvitedOwner(app.db, tenant.id, {
+        email: contactEmail,
+        displayName: contactName,
+        inviteToken,
+        inviteTokenExpiresAt: new Date(Date.now() + INVITE_TTL_MS),
+      });
+
+      const acceptUrl = `${app.config.appUrl}/accept-invite?token=${inviteToken}`;
+      let emailSent = true;
+      try {
+        await sendInviteEmail({ to: owner.email, contactName, org: tenant.org, acceptUrl });
+      } catch (err) {
+        app.log.error({ err }, 'failed to send organisation invite email');
+        emailSent = false;
+      }
+
       await logActivity(app.db, {
         tenantId: tenant.id,
         actorId: req.user.sub,
@@ -60,9 +94,9 @@ export async function tenantRoutes(app: FastifyInstance) {
         action: 'org.create',
         entityType: 'tenant',
         entityId: tenant.id,
-        detail: { org: tenant.org, subdomain: tenant.subdomain },
+        detail: { org: tenant.org, subdomain: tenant.subdomain, ownerEmail: owner.email, emailSent },
       });
-      return reply.code(201).send({ org: tenant });
+      return reply.code(201).send({ org: tenant, emailSent });
     },
   );
 

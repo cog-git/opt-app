@@ -52,6 +52,9 @@ services:
       - key: CORS_ORIGIN
         value: https://new.optsystemsltd.com
         scope: RUN_TIME
+      - key: APP_URL
+        value: https://new.optsystemsltd.com
+        scope: RUN_TIME
 
 static_sites:
   - name: web

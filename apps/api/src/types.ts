@@ -14,6 +14,8 @@ export interface Tenant {
   subdomain: string;
   tier: TenantTier;
   status: TenantStatus;
+  contactName: string | null;
+  contactEmail: string | null;
   archivedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -25,7 +27,9 @@ export interface User {
   email: string;
   displayName: string;
   role: UserRole;
-  passwordHash: string;
+  // Null while an invited owner hasn't accepted their invite yet (see
+  // migrations/010_org_invite.sql) — such users cannot log in.
+  passwordHash: string | null;
   isPlatformAdmin: boolean;
   archivedAt: string | null;
   createdAt: string;

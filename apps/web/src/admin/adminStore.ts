@@ -44,6 +44,8 @@ export interface Organisation {
   subdomain: string;
   tier: OrgTier;
   status: OrgStatus;
+  contactName: string | null;
+  contactEmail: string | null;
   archivedAt: string | null;
   createdAt: string;
 }
@@ -177,6 +179,8 @@ function toOrganisation(t: api.ApiTenant): Organisation {
     subdomain: t.subdomain,
     tier: t.tier,
     status: t.status,
+    contactName: t.contactName,
+    contactEmail: t.contactEmail,
     archivedAt: t.archivedAt,
     createdAt: t.createdAt,
   };
@@ -308,6 +312,8 @@ export function getCurrentOrg(): Organisation {
     subdomain: '',
     tier: 'clockin',
     status: 'active',
+    contactName: null,
+    contactEmail: null,
     archivedAt: null,
     createdAt: '',
   };
@@ -334,10 +340,13 @@ export async function createOrg(input: {
   org: string;
   subdomain: string;
   tier: OrgTier;
-}): Promise<Organisation> {
-  const created = toOrganisation(await api.createOrg(input));
+  contactName: string;
+  contactEmail: string;
+}): Promise<{ org: Organisation; emailSent: boolean }> {
+  const { org, emailSent } = await api.createOrg(input);
+  const created = toOrganisation(org);
   orgsCache = [created, ...orgsCache];
-  return created;
+  return { org: created, emailSent };
 }
 
 export async function updateOrgTier(id: string, tier: OrgTier): Promise<Organisation> {

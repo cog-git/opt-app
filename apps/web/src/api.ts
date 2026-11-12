@@ -31,6 +31,8 @@ export interface ApiTenant {
   subdomain: string;
   tier: TenantTier;
   status: TenantStatus;
+  contactName: string | null;
+  contactEmail: string | null;
   archivedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -262,6 +264,30 @@ export async function changeOwnPassword(
   await request('POST', '/auth/change-password', { currentPassword, newPassword });
 }
 
+export interface InviteDetails {
+  org: string;
+  subdomain: string;
+  email: string;
+  displayName: string;
+}
+
+/** Looks up a pending organisation invite by token, to greet the invitee before they set a password. */
+export async function getInvite(token: string): Promise<InviteDetails> {
+  return request<InviteDetails>('GET', `/auth/invite/${encodeURIComponent(token)}`);
+}
+
+/** Sets the password for a pending invite and signs the new owner straight in. */
+export async function acceptInvite(token: string, password: string): Promise<Session> {
+  const data = await request<{ token: string; user: ApiUser; tenant: ApiTenant }>(
+    'POST',
+    '/auth/accept-invite',
+    { token, password },
+  );
+  const next: Session = { token: data.token, user: data.user, tenant: data.tenant };
+  setSession(next, true);
+  return next;
+}
+
 // ── Organisations (platform-wide) ────────────────────────────────────────────
 
 export async function listOrgs(includeArchived = false): Promise<ApiTenant[]> {
@@ -273,8 +299,10 @@ export async function createOrg(input: {
   org: string;
   subdomain: string;
   tier: TenantTier;
-}): Promise<ApiTenant> {
-  return (await request<{ org: ApiTenant }>('POST', '/orgs', input)).org;
+  contactName: string;
+  contactEmail: string;
+}): Promise<{ org: ApiTenant; emailSent: boolean }> {
+  return request<{ org: ApiTenant; emailSent: boolean }>('POST', '/orgs', input);
 }
 
 export async function updateOrgTier(id: string, tier: TenantTier): Promise<ApiTenant> {

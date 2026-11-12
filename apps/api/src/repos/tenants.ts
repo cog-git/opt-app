@@ -39,14 +39,22 @@ export interface CreateTenantInput {
   org: string;
   subdomain: string;
   tier?: TenantTier;
+  contactName?: string | null;
+  contactEmail?: string | null;
 }
 
 export async function createTenant(db: Queryable, input: CreateTenantInput): Promise<Tenant> {
   const { rows } = await db.query(
-    `INSERT INTO tenants (org, subdomain, tier)
-     VALUES ($1, $2, COALESCE($3, 'clockin')::tenant_tier)
+    `INSERT INTO tenants (org, subdomain, tier, contact_name, contact_email)
+     VALUES ($1, $2, COALESCE($3, 'clockin')::tenant_tier, $4, $5)
      RETURNING *`,
-    [input.org.trim(), input.subdomain.trim().toLowerCase(), input.tier ?? null],
+    [
+      input.org.trim(),
+      input.subdomain.trim().toLowerCase(),
+      input.tier ?? null,
+      input.contactName?.trim() || null,
+      input.contactEmail?.trim().toLowerCase() || null,
+    ],
   );
   return mapTenant(rows[0]);
 }

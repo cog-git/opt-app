@@ -245,8 +245,15 @@ export function OrganisationsPage() {
       {open && (
         <NewOrgModal
           onClose={() => setOpen(false)}
-          onCreated={() => {
+          onCreated={(org, emailSent) => {
             setOpen(false);
+            if (emailSent) {
+              toast.success(`${org.org} created. An invite email was sent to ${org.contactEmail}.`);
+            } else {
+              toast.error(
+                `${org.org} created, but the invite email could not be sent. Share the sign-up link with ${org.contactEmail} directly.`,
+              );
+            }
             refresh();
           }}
         />
@@ -297,17 +304,21 @@ function NewOrgModal({
   onCreated,
 }: {
   onClose: () => void;
-  onCreated: () => void;
+  onCreated: (org: Organisation, emailSent: boolean) => void;
 }) {
   const [name, setName] = useState('');
   const [subdomain, setSubdomain] = useState('');
   const [tier, setTier] = useState<OrgTier>('clockin');
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
   async function handleSave() {
     const trimmedName = name.trim();
     const trimmedSub = subdomain.trim().toLowerCase();
+    const trimmedContactName = contactName.trim();
+    const trimmedContactEmail = contactEmail.trim();
     if (!trimmedName) {
       setError('Give the organisation a name.');
       return;
@@ -320,10 +331,24 @@ function NewOrgModal({
       setError('That subdomain is already taken.');
       return;
     }
+    if (!trimmedContactName) {
+      setError('Give the main contact a name.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedContactEmail)) {
+      setError('Enter a valid email address for the main contact.');
+      return;
+    }
     setSaving(true);
     try {
-      await createOrg({ org: trimmedName, subdomain: trimmedSub, tier });
-      onCreated();
+      const { org, emailSent } = await createOrg({
+        org: trimmedName,
+        subdomain: trimmedSub,
+        tier,
+        contactName: trimmedContactName,
+        contactEmail: trimmedContactEmail,
+      });
+      onCreated(org, emailSent);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not create the organisation.');
       setSaving(false);
@@ -368,6 +393,32 @@ function NewOrgModal({
         <option value="clockin">Clock-in</option>
         <option value="production">Production</option>
       </SelectField>
+
+      <div className="admin__field">
+        <label className="admin__field-label" htmlFor="new-org-contact-name">Main contact name</label>
+        <input
+          id="new-org-contact-name"
+          className="admin__input"
+          value={contactName}
+          onChange={(e) => setContactName(e.target.value)}
+          placeholder="e.g. Jane Smith"
+        />
+      </div>
+
+      <div className="admin__field">
+        <label className="admin__field-label" htmlFor="new-org-contact-email">Main contact email</label>
+        <input
+          id="new-org-contact-email"
+          className="admin__input"
+          type="email"
+          value={contactEmail}
+          onChange={(e) => setContactEmail(e.target.value)}
+          placeholder="jane@harbourengineering.com"
+        />
+        <p className="admin__field-hint">
+          We&apos;ll email them a link to set up their login.
+        </p>
+      </div>
 
       {error ? <div className="admin__form-error">{error}</div> : null}
 

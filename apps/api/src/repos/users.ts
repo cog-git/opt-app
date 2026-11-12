@@ -64,6 +64,87 @@ export async function createUser(
   return mapUser(rows[0]);
 }
 
+export interface CreateInvitedOwnerInput {
+  email: string;
+  displayName: string;
+  inviteToken: string;
+  inviteTokenExpiresAt: Date;
+}
+
+/**
+ * Creates the owner for a freshly created organisation with no password —
+ * they get one by following the invite link emailed to them (see
+ * lib/mailer.ts and routes/auth.ts `/auth/accept-invite`). Such a user cannot
+ * log in until the invite is accepted (see the login guard on passwordHash).
+ */
+export async function createInvitedOwner(
+  db: Queryable,
+  tenantId: string,
+  input: CreateInvitedOwnerInput,
+): Promise<User> {
+  const { rows } = await db.query(
+    `INSERT INTO users (tenant_id, email, display_name, role, password_hash, invite_token, invite_token_expires_at)
+     VALUES ($1, $2, $3, 'owner'::user_role, NULL, $4, $5)
+     RETURNING *`,
+    [
+      tenantId,
+      input.email.trim(),
+      input.displayName.trim(),
+      input.inviteToken,
+      input.inviteTokenExpiresAt.toISOString(),
+    ],
+  );
+  return mapUser(rows[0]);
+}
+
+export interface PendingInvite {
+  userId: string;
+  tenantId: string;
+  email: string;
+  displayName: string;
+  org: string;
+  subdomain: string;
+}
+
+/** Looks up a not-yet-accepted, not-expired invite by its token, across tenants. */
+export async function findInviteByToken(db: Queryable, token: string): Promise<PendingInvite | null> {
+  const { rows } = await db.query(
+    `SELECT u.id AS user_id, u.tenant_id, u.email, u.display_name, t.org, t.subdomain
+       FROM users u
+       JOIN tenants t ON t.id = u.tenant_id
+      WHERE u.invite_token = $1
+        AND u.invite_token_expires_at > now()
+        AND u.password_hash IS NULL
+        AND u.archived_at IS NULL
+        AND t.archived_at IS NULL`,
+    [token],
+  );
+  const r = rows[0];
+  if (!r) return null;
+  return {
+    userId: String(r.user_id),
+    tenantId: String(r.tenant_id),
+    email: String(r.email),
+    displayName: String(r.display_name),
+    org: String(r.org),
+    subdomain: String(r.subdomain),
+  };
+}
+
+/** Sets the password for a pending invite and clears the token. */
+export async function acceptInvite(
+  db: Queryable,
+  userId: string,
+  passwordHash: string,
+): Promise<void> {
+  await db.query(
+    `UPDATE users
+        SET password_hash = $2, invite_token = NULL, invite_token_expires_at = NULL, updated_at = now()
+      WHERE id = $1 AND password_hash IS NULL`,
+    [userId, passwordHash],
+  );
+}
+
 export interface UpdateUserInput {
   displayName?: string;
   role?: UserRole;

@@ -6,6 +6,8 @@ export interface AppConfig {
   jwtRememberExpiresIn: string;
   corsOrigin: string;
   databaseUrl: string;
+  /** Base URL of the web app — used to build links sent in emails (e.g. invites). */
+  appUrl: string;
 }
 
 const DEV_JWT_SECRET = 'change-me-in-production';
@@ -30,5 +32,6 @@ export function loadConfig(): AppConfig {
     jwtRememberExpiresIn: process.env.JWT_REMEMBER_EXPIRES_IN ?? '30d',
     corsOrigin: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
     databaseUrl: process.env.DATABASE_URL ?? 'postgres://opt:opt@localhost:5432/opt',
+    appUrl: (process.env.APP_URL ?? 'http://localhost:5173').replace(/\/$/, ''),
   };
 }
