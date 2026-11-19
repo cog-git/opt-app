@@ -75,7 +75,7 @@
   border: 1px solid var(--line);
   border-radius: 22px;
   padding: 22px 26px;
-  box-shadow: 0 6px 20px rgba(32, 36, 42, 0.05);
+  box-shadow: 0 6px 20px rgba(10, 10, 10, 0.05);
 }
 .kiosk__spacer {
   flex: 1;
@@ -124,7 +124,7 @@
 }
 .kiosk__chip.rose .kiosk__av {
   background: var(--rose);
-  color: #fff;
+  color: var(--ink);
 }
 .kiosk__nm {
   display: flex;

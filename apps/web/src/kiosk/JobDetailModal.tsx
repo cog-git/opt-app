@@ -61,7 +61,7 @@ export function JobDetailModal({ jobId, onClose }: { jobId: string; onClose: () 
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(20,28,40,.45)',
+        background: 'rgba(10,10,10,.45)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -79,7 +79,7 @@ export function JobDetailModal({ jobId, onClose }: { jobId: string; onClose: () 
           maxHeight: '86vh',
           overflowY: 'auto',
           padding: '32px 34px 26px',
-          boxShadow: '0 24px 60px rgba(20,28,40,.28)',
+          boxShadow: '0 24px 60px rgba(10,10,10,.28)',
         }}
       >
         {!job ? (

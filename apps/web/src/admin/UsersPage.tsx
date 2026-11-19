@@ -128,7 +128,7 @@ export function UsersPage() {
           <h1>Users</h1>
         </div>
         <Button variant="primary" onClick={() => setAddOpen(true)} style={{ gap: 8 }}>
-          <PlusIcon stroke="#fff" />
+          <PlusIcon stroke="var(--ink)" />
           Add user
         </Button>
       </div>

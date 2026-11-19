@@ -33,8 +33,8 @@ export default defineConfig({
         name: 'OPT Systems',
         short_name: 'OPT',
         description: 'Workshop time-tracking and clock-in platform.',
-        theme_color: '#2f80ed',
-        background_color: '#f3f1ec',
+        theme_color: '#70F181',
+        background_color: '#D7D7D7',
         display: 'standalone',
         start_url: base,
         icons: [

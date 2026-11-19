@@ -87,7 +87,7 @@ export function TasksPage() {
           <h1>Tasks</h1>
         </div>
         <Button variant="primary" onClick={() => setAddOpen(true)} style={{ gap: 8 }}>
-          <PlusIcon stroke="#fff" />
+          <PlusIcon stroke="var(--ink)" />
           Create task
         </Button>
       </div>

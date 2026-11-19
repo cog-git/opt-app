@@ -2,30 +2,37 @@
 
 /*
  * OPT Systems — locked design tokens.
- * Rules: light/porcelain surfaces, dark ink text, NO dark green, NO gradients.
- * Sky blue is the lead colour for buttons/accents. Flora green is the logo colour.
+ * Rules: every colour used anywhere in the app MUST be one of the 8 official
+ * brand hexes from the client's branding guideline (page 9):
+ *   #1C4A3B (deep green), #442928 (maroon), #70F181 (flora green),
+ *   #CE8888 (dusty rose), #404040 (dark grey), #D7D7D7 (light grey),
+ *   #F2F2F2 (near-white/porcelain), #0A0A0A (near-black).
+ * No other hex, rgb/rgba/hsl value, or tint/shade outside this set is
+ * permitted anywhere (web app, PWA manifest, emails, SVGs, charts).
+ * Flora green is now also the lead accent colour for buttons (previously
+ * sky blue — sky blue is retired). NO gradients.
  */
 :root {
-  /* Lead accent — primary buttons */
-  --sky: #2f80ed;
-  --sky-deep: #1f63c4;
-  --sky-soft: #e9f1fd;
+  /* Lead accent — primary buttons (flora green, not sky blue) */
+  --sky: #70f181;
+  --sky-deep: #1c4a3b;
+  --sky-soft: #f2f2f2;
 
   /* Logo + supporting */
   --flora: #70f181;
-  --flora-deep: #4bd463;
+  --flora-deep: #1c4a3b;
   --rose: #ce8888;
-  --rose-deep: #9c4f4f;
-  --rose-deeper: #844242;
-  --rose-soft: #f6e6e6;
+  --rose-deep: #442928;
+  --rose-deeper: #442928;
+  --rose-soft: #f2f2f2;
 
   /* Surfaces & neutrals */
-  --porcelain: #f3f1ec;
-  --paper: #fff;
-  --grey-light: #e9e8e3;
-  --ink: #20242a;
-  --muted: #6c7178;
-  --line: #e4e2db;
+  --porcelain: #d7d7d7;
+  --paper: #f2f2f2;
+  --grey-light: #d7d7d7;
+  --ink: #0a0a0a;
+  --muted: #404040;
+  --line: #d7d7d7;
   --grey: #404040;
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;

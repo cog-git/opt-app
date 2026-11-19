@@ -144,7 +144,7 @@ export function KioskManagerOverridePage() {
                 style={{
                   ...keyStyle,
                   background: pin.length < 4 ? 'var(--line)' : 'var(--sky)',
-                  color: pin.length < 4 ? 'var(--muted)' : '#fff',
+                  color: pin.length < 4 ? 'var(--muted)' : 'var(--ink)',
                   cursor: pin.length < 4 ? 'default' : 'pointer',
                   fontSize: 16,
                 }}
@@ -182,7 +182,7 @@ export function KioskManagerOverridePage() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: 14, width: '100%',
                       padding: '14px 18px', borderRadius: 16, border: '1px solid var(--line)',
-                      background: '#fff', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
+                      background: 'var(--paper)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
                     }}
                   >
                     <span style={{
@@ -226,8 +226,8 @@ export function KioskManagerOverridePage() {
                       padding: '12px 18px', borderRadius: 999, cursor: 'pointer', fontFamily: 'inherit',
                       fontSize: 15, fontWeight: 600,
                       border: `1px solid ${active ? 'var(--sky)' : 'var(--line)'}`,
-                      background: active ? 'var(--sky)' : '#fff',
-                      color: active ? '#fff' : 'var(--ink)',
+                      background: active ? 'var(--sky)' : 'var(--paper)',
+                      color: 'var(--ink)',
                     }}
                   >
                     {r}
@@ -259,7 +259,7 @@ export function KioskManagerOverridePage() {
 
 const keyStyle: React.CSSProperties = {
   width: 84, height: 72, borderRadius: 18, border: '1px solid var(--line)',
-  background: '#fff', cursor: 'pointer', fontFamily: 'inherit',
+  background: 'var(--paper)', cursor: 'pointer', fontFamily: 'inherit',
   fontSize: 26, fontWeight: 700, color: 'var(--ink)',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
 };

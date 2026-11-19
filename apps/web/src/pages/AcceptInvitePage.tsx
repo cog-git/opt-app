@@ -128,7 +128,7 @@ export function AcceptInvitePage() {
             {error ? (
               <div
                 className="login__error"
-                style={{ color: 'var(--rose, #c0392b)', fontSize: 14, marginTop: 16 }}
+                style={{ color: 'var(--rose)', fontSize: 14, marginTop: 16 }}
               >
                 {error}
               </div>

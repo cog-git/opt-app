@@ -139,7 +139,7 @@ export function OrganisationsPage() {
           <h1>Organisations</h1>
         </div>
         <Button variant="primary" onClick={() => setOpen(true)} style={{ gap: 8 }}>
-          <PlusIcon stroke="#fff" />
+          <PlusIcon stroke="var(--ink)" />
           New organisation
         </Button>
       </div>

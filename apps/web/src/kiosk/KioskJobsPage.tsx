@@ -172,7 +172,7 @@ export function KioskJobsPage() {
             padding: '22px 28px',
             borderRadius: 18,
             border: isActive ? '2.5px solid var(--sky)' : '1.5px solid var(--line)',
-            background: isActive ? '#edf4fe' : 'var(--paper)',
+            background: isActive ? 'var(--sky-soft)' : 'var(--paper)',
             cursor: 'pointer',
             fontFamily: 'inherit',
             transition: 'all 120ms ease',
@@ -204,7 +204,7 @@ export function KioskJobsPage() {
               borderRadius: '50%',
               background: 'var(--sky)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#fff',
+              color: 'var(--ink)',
               flexShrink: 0,
             }}>
               <CheckIcon />
@@ -279,10 +279,10 @@ export function KioskJobsPage() {
             gap: 20,
           }}>
             <div>
-              <div style={{ color: '#dbe9fd', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
+              <div style={{ color: 'var(--ink)', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
                 ON JOB
               </div>
-              <div style={{ color: '#fff', fontSize: 26, fontWeight: 800 }}>
+              <div style={{ color: 'var(--ink)', fontSize: 26, fontWeight: 800 }}>
                 {activeJob.title} {activeJob.ref}
               </div>
             </div>
@@ -291,7 +291,7 @@ export function KioskJobsPage() {
                 fontVariantNumeric: 'tabular-nums',
                 fontSize: 40,
                 fontWeight: 800,
-                color: '#fff',
+                color: 'var(--ink)',
                 letterSpacing: 1,
                 fontFamily: 'var(--mono, monospace)',
               }}>
@@ -301,7 +301,7 @@ export function KioskJobsPage() {
                 variant="ghost"
                 onClick={handleEndJob}
                 disabled={busy}
-                style={{ background: 'rgba(255,255,255,.15)', color: '#fff', border: '1.5px solid rgba(255,255,255,.3)' }}
+                style={{ background: 'rgba(10,10,10,.12)', color: 'var(--ink)', border: '1.5px solid rgba(10,10,10,.3)' }}
               >
                 Clock off job
               </Button>

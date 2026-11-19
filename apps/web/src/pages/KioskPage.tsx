@@ -75,7 +75,7 @@ export function KioskPage() {
             tone="sky"
             title="Job List"
             subtitle="Pick a job to work on"
-            icon={<ListIcon stroke="#fff" />}
+            icon={<ListIcon stroke="var(--ink)" />}
             onClick={() => navigate('/kiosk/jobs')}
           />
         )}

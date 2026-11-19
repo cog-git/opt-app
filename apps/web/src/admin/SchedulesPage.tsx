@@ -114,7 +114,7 @@ export function SchedulesPage() {
           <h1>Schedules</h1>
         </div>
         <Button variant="primary" onClick={() => setAddOpen(true)} style={{ gap: 8 }}>
-          <PlusIcon stroke="#fff" />
+          <PlusIcon stroke="var(--ink)" />
           Create schedule
         </Button>
       </div>

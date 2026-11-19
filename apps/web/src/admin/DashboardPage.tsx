@@ -216,8 +216,8 @@ export function DashboardPage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" vertical={false} />
                         <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="var(--muted)" />
                         <YAxis tick={{ fontSize: 12 }} stroke="var(--muted)" unit="h" />
-                        <Tooltip formatter={(v: number) => [`${v}h`, 'Hours']} cursor={{ fill: 'rgba(47,128,237,0.06)' }} />
-                        <Bar dataKey="hours" fill="#2f80ed" radius={[6, 6, 0, 0]} />
+                        <Tooltip formatter={(v: number) => [`${v}h`, 'Hours']} cursor={{ fill: 'rgba(112,241,129,0.06)' }} />
+                        <Bar dataKey="hours" fill="var(--sky)" radius={[6, 6, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -236,8 +236,8 @@ export function DashboardPage() {
                           <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" horizontal={false} />
                           <XAxis type="number" tick={{ fontSize: 12 }} stroke="var(--muted)" unit="h" />
                           <YAxis type="category" dataKey="name" width={70} tick={{ fontSize: 12 }} stroke="var(--muted)" />
-                          <Tooltip formatter={(v: number) => [`${v}h`, 'Hours']} cursor={{ fill: 'rgba(75,212,99,0.08)' }} />
-                          <Bar dataKey="hours" fill="#4bd463" radius={[0, 6, 6, 0]} />
+                          <Tooltip formatter={(v: number) => [`${v}h`, 'Hours']} cursor={{ fill: 'rgba(28,74,59,0.08)' }} />
+                          <Bar dataKey="hours" fill="var(--flora-deep)" radius={[0, 6, 6, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>

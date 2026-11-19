@@ -60,11 +60,13 @@ function daysAgoDateInput(n: number): string {
   return `${y}-${m}-${day}`;
 }
 
-// Chart palette — sky lead, flora/rose supporting, then a few distinct tints so
-// pie slices stay legible when a tenant has many workshops.
+// Chart palette — the 8 official brand hexes only, ordered darkest/boldest
+// first so the most common (fewer-workshop) cases read clearly; the two
+// near-white/light-grey brand neutrals land last since they read faintest
+// against the card background.
 const CHART_COLORS = [
-  '#2f80ed', '#70f181', '#ce8888', '#f2c14e',
-  '#9b8cff', '#4bd463', '#1f63c4', '#e07a5f',
+  '#70F181', '#1C4A3B', '#CE8888', '#442928',
+  '#404040', '#0A0A0A', '#D7D7D7', '#F2F2F2',
 ];
 
 /** Shorten long job/workshop labels so axis ticks and legends don't wrap. */
@@ -288,7 +290,7 @@ export function ReportsPage() {
           disabled={entries.length === 0}
           style={{ gap: 8 }}
         >
-          <DownloadIcon stroke="#fff" />
+          <DownloadIcon stroke="var(--ink)" />
           Export CSV
         </Button>
       </div>
@@ -423,8 +425,8 @@ export function ReportsPage() {
                     tick={{ fontSize: 12 }}
                     stroke="var(--muted)"
                   />
-                  <Tooltip formatter={(v: number) => [`${v}h`, 'Hours']} cursor={{ fill: 'rgba(47,128,237,0.06)' }} />
-                  <Bar dataKey="hours" fill="#2f80ed" radius={[0, 6, 6, 0]} />
+                  <Tooltip formatter={(v: number) => [`${v}h`, 'Hours']} cursor={{ fill: 'rgba(112,241,129,0.06)' }} />
+                  <Bar dataKey="hours" fill="var(--sky)" radius={[0, 6, 6, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -476,8 +478,8 @@ export function ReportsPage() {
                         height={50}
                       />
                       <YAxis tick={{ fontSize: 12 }} stroke="var(--muted)" unit="h" />
-                      <Tooltip formatter={(v: number) => [`${v}h`, 'Hours']} cursor={{ fill: 'rgba(75,212,99,0.08)' }} />
-                      <Bar dataKey="hours" fill="#4bd463" radius={[6, 6, 0, 0]} />
+                      <Tooltip formatter={(v: number) => [`${v}h`, 'Hours']} cursor={{ fill: 'rgba(28,74,59,0.08)' }} />
+                      <Bar dataKey="hours" fill="var(--flora-deep)" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

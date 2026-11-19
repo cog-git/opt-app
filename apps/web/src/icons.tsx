@@ -54,7 +54,7 @@ export function ClockIcon({ stroke = 'var(--ink)' }: { stroke?: string }) {
   );
 }
 
-export function ListIcon({ stroke = '#fff' }: { stroke?: string }) {
+export function ListIcon({ stroke = 'var(--ink)' }: { stroke?: string }) {
   return (
     <svg
       width="56"
@@ -81,7 +81,7 @@ export function QrIcon() {
       height="30"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#9aa0a6"
+      stroke="var(--grey-light)"
       strokeWidth="1.6"
       strokeLinecap="round"
       strokeLinejoin="round"

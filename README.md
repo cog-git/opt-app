@@ -57,10 +57,12 @@ psql "$DATABASE_URL" -f apps/api/migrations/001_init.sql
 
 ## Design system
 
-Locked palette and rules live in `packages/ui/src/tokens.css`. Sky blue
-(`--sky #2f80ed`) is the lead colour (primary buttons + the OPT logo). Surfaces
-are light/porcelain, text is dark ink, flat fills only — **no gradients, no dark
-green**. Font is Inter (Google Fonts).
+Locked palette and rules live in `packages/ui/src/tokens.css`. Every colour in
+the app must be one of the 8 official brand hexes (flora green, deep green,
+maroon, dusty rose, dark grey, light grey, porcelain, near-black). Flora green
+(`--sky` / `--flora`, `#70F181`) is the lead colour (primary buttons + the OPT
+logo). Surfaces are light/porcelain, text is dark ink, flat fills only — **no
+gradients**. Font is Inter (Google Fonts).
 
 The OPT logo renders via a CSS mask so it can be tinted any colour without
 shipping multiple PNGs — see `packages/ui/src/components/Logo.tsx`. Brand assets

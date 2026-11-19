@@ -27,7 +27,7 @@ const base: React.CSSProperties = {
 };
 
 const variants: Record<ButtonVariant, React.CSSProperties> = {
-  primary: { background: 'var(--sky)', color: '#fff' },
+  primary: { background: 'var(--sky)', color: 'var(--ink)' },
   flora: { background: 'var(--flora)', color: 'var(--ink)' },
   ghost: { background: 'transparent', color: 'var(--ink)', border: '1.5px solid var(--line)' },
 };

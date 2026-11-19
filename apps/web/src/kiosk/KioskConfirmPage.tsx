@@ -136,7 +136,7 @@ export function KioskConfirmPage() {
               background: willClockIn ? 'var(--flora)' : 'var(--rose)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 44, fontWeight: 800,
-              color: willClockIn ? 'var(--ink)' : '#fff',
+              color: 'var(--ink)',
             }}>
               {user.initials}
             </div>
@@ -180,7 +180,7 @@ export function KioskConfirmPage() {
               width: 120, height: 120, borderRadius: '50%',
               background: willClockIn ? 'var(--flora)' : 'var(--sky)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: willClockIn ? 'var(--ink)' : '#fff',
+              color: 'var(--ink)',
             }}>
               <CheckIcon />
             </div>

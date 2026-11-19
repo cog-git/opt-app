@@ -20,25 +20,27 @@ interface ToneStyles {
 }
 
 /*
- * NO dark green anywhere (design rule). The flora tile uses --ink for text and
- * a sky "go" chip rather than the mockup's dark-green treatment.
+ * Brand rule: every colour here must be one of the 8 official brand hexes
+ * (see packages/ui/src/tokens.css). --sky and --flora are now the same
+ * flora-green brand colour, so both tones use the ink-on-flora-green
+ * treatment for contrast rather than the old white-on-blue styling.
  */
 const tones: Record<TileTone, ToneStyles> = {
   flora: {
     bg: 'var(--flora)',
     fg: 'var(--ink)',
     sub: 'var(--ink)',
-    iconBg: 'rgba(32,36,42,.12)',
+    iconBg: 'rgba(10,10,10,.12)',
     goBg: 'var(--ink)',
     goFg: 'var(--flora)',
   },
   sky: {
     bg: 'var(--sky)',
-    fg: '#fff',
-    sub: '#dbe9fd',
-    iconBg: 'rgba(255,255,255,.18)',
-    goBg: '#fff',
-    goFg: 'var(--sky-deep)',
+    fg: 'var(--ink)',
+    sub: 'var(--ink)',
+    iconBg: 'rgba(10,10,10,.12)',
+    goBg: 'var(--ink)',
+    goFg: 'var(--sky)',
   },
 };
 
