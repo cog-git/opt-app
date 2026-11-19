@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 
 export interface LogoProps {
-  /** Fill colour of the logo. Defaults to flora green. */
+  /** Fill colour of the logo. Defaults to deep green (brand #1C4A3B). */
   color?: string;
   /** Rendered height in px. Width is derived from the 2556x543 (~4.71:1) aspect ratio. */
   height?: number;
@@ -24,7 +24,7 @@ const DEFAULT_SRC = `${BASE}brand/logo-white.png`;
  * by the logo artwork — no stretching because width tracks the fixed aspect.
  */
 export function Logo({
-  color = 'var(--flora)',
+  color = 'var(--flora-deep)',
   height = 36,
   src = DEFAULT_SRC,
   className,

@@ -66,7 +66,7 @@ export function AcceptInvitePage() {
   return (
     <div className="login">
       <aside className="login__brand">
-        <Logo color="var(--flora)" height={36} />
+        <Logo color="var(--flora-deep)" height={36} />
         <div>
           <div className="login__dots">
             <i className="d1" />
