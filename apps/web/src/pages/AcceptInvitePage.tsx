@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, Field, Logo, Pill } from '@opt/ui';
-import { EyeIcon } from '../icons';
+import { EyeIcon, EyeOffIcon } from '../icons';
 import { ApiError, acceptInvite, getInvite } from '../api';
 import type { InviteDetails } from '../api';
 import './login.css';
@@ -22,6 +22,8 @@ export function AcceptInvitePage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -109,20 +111,24 @@ export function AcceptInvitePage() {
 
             <Field
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              icon={<EyeIcon />}
+              icon={showPassword ? <EyeOffIcon /> : <EyeIcon />}
+              onIconClick={() => setShowPassword((v) => !v)}
+              iconLabel={showPassword ? 'Hide password' : 'Show password'}
             />
 
             <Field
               label="Confirm password"
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              icon={<EyeIcon />}
+              icon={showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+              onIconClick={() => setShowConfirmPassword((v) => !v)}
+              iconLabel={showConfirmPassword ? 'Hide password' : 'Show password'}
             />
 
             {error ? (

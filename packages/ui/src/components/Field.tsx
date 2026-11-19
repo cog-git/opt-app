@@ -5,10 +5,14 @@ export interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   /** Optional trailing icon rendered inside the input (e.g. mail / eye glyph). */
   icon?: ReactNode;
+  /** Makes the trailing icon an actual button (e.g. toggling password visibility). */
+  onIconClick?: () => void;
+  /** Accessible label for the icon button, required when onIconClick is set. */
+  iconLabel?: string;
 }
 
 /** Labelled text input matching the sign-in form styling. */
-export function Field({ label, icon, id, style, ...inputProps }: FieldProps) {
+export function Field({ label, icon, onIconClick, iconLabel, id, style, ...inputProps }: FieldProps) {
   const generatedId = useId();
   const fieldId = id ?? generatedId;
 
@@ -45,19 +49,41 @@ export function Field({ label, icon, id, style, ...inputProps }: FieldProps) {
           {...inputProps}
         />
         {icon ? (
-          <span
-            aria-hidden
-            style={{
-              position: 'absolute',
-              right: 16,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: 'var(--muted)',
-              display: 'inline-flex',
-            }}
-          >
-            {icon}
-          </span>
+          onIconClick ? (
+            <button
+              type="button"
+              onClick={onIconClick}
+              aria-label={iconLabel}
+              style={{
+                position: 'absolute',
+                right: 16,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'var(--muted)',
+                display: 'inline-flex',
+                background: 'none',
+                border: 0,
+                padding: 0,
+                cursor: 'pointer',
+              }}
+            >
+              {icon}
+            </button>
+          ) : (
+            <span
+              aria-hidden
+              style={{
+                position: 'absolute',
+                right: 16,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'var(--muted)',
+                display: 'inline-flex',
+              }}
+            >
+              {icon}
+            </span>
+          )
         ) : null}
       </div>
     </div>

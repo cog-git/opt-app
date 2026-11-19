@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Field, Logo, Pill } from '@opt/ui';
-import { MailIcon, EyeIcon } from '../icons';
+import { MailIcon, EyeIcon, EyeOffIcon } from '../icons';
 import { ApiError, login } from '../api';
 import './login.css';
 
@@ -17,6 +17,7 @@ export function LoginPage() {
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -89,11 +90,13 @@ export function LoginPage() {
 
           <Field
             label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            icon={<EyeIcon />}
+            icon={showPassword ? <EyeOffIcon /> : <EyeIcon />}
+            onIconClick={() => setShowPassword((v) => !v)}
+            iconLabel={showPassword ? 'Hide password' : 'Show password'}
           />
 
           <div className="login__row">
