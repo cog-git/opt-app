@@ -7,10 +7,11 @@ import { toPublicUser } from '../repos/mappers.js';
 import { logActivity } from '../repos/activity.js';
 
 interface CreateUserBody {
-  email: string;
+  // Omitted for staff: they are kiosk-only and never sign in with email/password.
+  email?: string;
   displayName: string;
   role: UserRole;
-  password: string;
+  password?: string;
 }
 interface UpdateUserBody {
   displayName?: string;
@@ -36,8 +37,8 @@ export async function userRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, requireRole(...manage)] },
     async (req, reply) => {
       const { email, displayName, role, password } = req.body ?? ({} as CreateUserBody);
-      if (!email || !displayName || !role || !password) {
-        return reply.code(400).send({ error: 'email, displayName, role and password are required' });
+      if (!displayName || !role) {
+        return reply.code(400).send({ error: 'displayName and role are required' });
       }
       if (!isRole(role)) {
         return reply.code(400).send({ error: 'invalid role' });
@@ -47,11 +48,15 @@ export async function userRoutes(app: FastifyInstance) {
       if (ROLE_RANK[role] >= ROLE_RANK[req.user.role]) {
         return reply.code(403).send({ error: 'cannot grant a role at or above your own' });
       }
+      // Staff are kiosk-only: no email/password is collected or stored for them.
+      if (role !== 'staff' && (!email || !password)) {
+        return reply.code(400).send({ error: 'email and password are required for this role' });
+      }
       const user = await createUser(app.db, req.user.tenantId, {
-        email,
+        email: role === 'staff' ? null : (email as string),
         displayName,
         role,
-        passwordHash: await hashPassword(password),
+        passwordHash: role === 'staff' ? null : await hashPassword(password as string),
       });
       await logActivity(app.db, {
         tenantId: req.user.tenantId,

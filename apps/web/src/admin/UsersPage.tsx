@@ -192,7 +192,7 @@ export function UsersPage() {
                       <span className="admin__strong">{u.name}</span>
                     </div>
                   </td>
-                  <td><span className="admin__sub">{u.email}</span></td>
+                  <td><span className="admin__sub">{u.email || 'Kiosk only'}</span></td>
                   <td>
                     {archived ? (
                       <RoleBadge role={u.role} />
@@ -367,19 +367,23 @@ function AddUserModal({
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
+  const isStaff = role === 'staff';
+
   async function handleSave() {
     const n = name.trim();
     const em = email.trim();
     if (!n) { setError('Enter a name.'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { setError('Enter a valid email address.'); return; }
-    if (password.length < 8) { setError('Set a temporary password of at least 8 characters.'); return; }
-    if (getUsers().some((u) => u.email.toLowerCase() === em.toLowerCase() && u.archivedAt === null)) {
-      setError('Someone with that email already exists in this organisation.');
-      return;
+    if (!isStaff) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { setError('Enter a valid email address.'); return; }
+      if (password.length < 8) { setError('Set a temporary password of at least 8 characters.'); return; }
+      if (getUsers().some((u) => u.email.toLowerCase() === em.toLowerCase() && u.archivedAt === null)) {
+        setError('Someone with that email already exists in this organisation.');
+        return;
+      }
     }
     setSaving(true);
     try {
-      await addUser({ name: n, email: em, role, password });
+      await addUser(isStaff ? { name: n, role } : { name: n, email: em, role, password });
       onAdded(n);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not add the user.');
@@ -393,40 +397,6 @@ function AddUserModal({
       description="Invite a team member to this organisation."
       onClose={onClose}
     >
-      <div className="admin__field">
-        <label className="admin__field-label" htmlFor="new-user-name">Full name</label>
-        <input
-          id="new-user-name"
-          className="admin__input"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g. Niamh O'Reilly"
-          autoFocus
-        />
-      </div>
-      <div className="admin__field">
-        <label className="admin__field-label" htmlFor="new-user-email">Email address</label>
-        <input
-          id="new-user-email"
-          className="admin__input"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="name@organisation.example"
-        />
-      </div>
-      <div className="admin__field">
-        <label className="admin__field-label" htmlFor="new-user-password">Temporary password</label>
-        <input
-          id="new-user-password"
-          className="admin__input"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="At least 8 characters"
-          autoComplete="new-password"
-        />
-      </div>
       <SelectField
         id="new-user-role"
         label="Role"
@@ -438,6 +408,49 @@ function AddUserModal({
           <option key={r} value={r}>{roleLabel(r)}</option>
         ))}
       </SelectField>
+
+      <div className="admin__field">
+        <label className="admin__field-label" htmlFor="new-user-name">Full name</label>
+        <input
+          id="new-user-name"
+          className="admin__input"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g. Niamh O'Reilly"
+          autoFocus
+        />
+      </div>
+      {isStaff ? (
+        <div className="admin__sub" style={{ marginTop: 8 }}>
+          Staff clock in at the kiosk only — no email or password needed.
+        </div>
+      ) : (
+        <>
+          <div className="admin__field">
+            <label className="admin__field-label" htmlFor="new-user-email">Email address</label>
+            <input
+              id="new-user-email"
+              className="admin__input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@organisation.example"
+            />
+          </div>
+          <div className="admin__field">
+            <label className="admin__field-label" htmlFor="new-user-password">Temporary password</label>
+            <input
+              id="new-user-password"
+              className="admin__input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="At least 8 characters"
+              autoComplete="new-password"
+            />
+          </div>
+        </>
+      )}
 
       {error ? <div className="admin__form-error">{error}</div> : null}
 

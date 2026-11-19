@@ -356,10 +356,11 @@ export async function listUsers(includeArchived = false): Promise<ApiUser[]> {
 }
 
 export async function createUser(input: {
-  email: string;
+  // Omitted for staff: they are kiosk-only and never sign in with email/password.
+  email?: string;
   displayName: string;
   role: ApiUserRole;
-  password: string;
+  password?: string;
 }): Promise<ApiUser> {
   return (await request<{ user: ApiUser }>('POST', '/users', input)).user;
 }

@@ -44,10 +44,11 @@ export async function listUsers(
 }
 
 export interface CreateUserInput {
-  email: string;
+  // Null for staff: they are kiosk-only and never sign in with email/password.
+  email: string | null;
   displayName: string;
   role: UserRole;
-  passwordHash: string;
+  passwordHash: string | null;
 }
 
 export async function createUser(
@@ -59,7 +60,7 @@ export async function createUser(
     `INSERT INTO users (tenant_id, email, display_name, role, password_hash)
      VALUES ($1, $2, $3, $4::user_role, $5)
      RETURNING *`,
-    [tenantId, input.email.trim(), input.displayName.trim(), input.role, input.passwordHash],
+    [tenantId, input.email?.trim() || null, input.displayName.trim(), input.role, input.passwordHash],
   );
   return mapUser(rows[0]);
 }

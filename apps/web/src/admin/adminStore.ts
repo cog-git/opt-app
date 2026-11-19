@@ -397,9 +397,10 @@ export function getUserById(id: string): AdminUser | undefined {
 
 export async function addUser(input: {
   name: string;
-  email: string;
+  // Omitted for staff: they are kiosk-only and never sign in with email/password.
+  email?: string;
   role: UserRole;
-  password: string;
+  password?: string;
 }): Promise<AdminUser> {
   const created = toAdminUser(
     await api.createUser({
