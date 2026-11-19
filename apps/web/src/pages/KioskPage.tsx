@@ -4,6 +4,7 @@ import { Logo, Tile } from '@opt/ui';
 import { ClockIcon, ListIcon } from '../icons';
 import { getUsers, isClockOnly } from '../kiosk/store';
 import { SyncBadge } from '../kiosk/SyncBadge';
+import { getSession, listWorkshops } from '../api';
 import './kiosk.css';
 
 function pad2(n: number): string {
@@ -28,6 +29,8 @@ export function KioskPage() {
   const navigate = useNavigate();
   const [{ date, time }, setClock] = useState(liveTime);
   const [users, setUsers] = useState(() => getUsers());
+  const session = getSession();
+  const [workshopName, setWorkshopName] = useState('Workshop');
 
   // Update clock every 30 s
   useEffect(() => {
@@ -40,6 +43,20 @@ export function KioskPage() {
     setUsers([...getUsers()]);
   }, []);
 
+  // Pull this organisation's first workshop name so the header reflects the
+  // org that's actually signed in, not a hardcoded placeholder. Offline
+  // kiosks (no session) keep the generic label.
+  useEffect(() => {
+    if (!session) return;
+    listWorkshops()
+      .then((workshops) => {
+        if (workshops[0]) setWorkshopName(workshops[0].name);
+      })
+      .catch(() => {
+        // keep the placeholder
+      });
+  }, [session]);
+
   const onFloor = users.filter((u) => u.clockedIn);
   const clockOnly = isClockOnly();
 
@@ -48,8 +65,8 @@ export function KioskPage() {
       <header className="kiosk__top">
         <Logo color="var(--flora-deep)" height={32} />
         <div className="kiosk__ws">
-          <b>Fabrication Workshop</b>
-          <span>Acme Farm Group</span>
+          <b>{workshopName}</b>
+          <span>{session?.tenant.org ?? 'Acme Farm Group'}</span>
         </div>
         <div className="kiosk__topright">
           <div className="kiosk__clock">
