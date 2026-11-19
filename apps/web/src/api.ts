@@ -288,6 +288,33 @@ export async function acceptInvite(token: string, password: string): Promise<Ses
   return next;
 }
 
+/** Requests a password-reset email. Always resolves — the API never reveals whether the account exists. */
+export async function forgotPassword(subdomain: string, email: string): Promise<{ ok: true }> {
+  return request<{ ok: true }>('POST', '/auth/forgot-password', { subdomain, email });
+}
+
+export interface ResetTokenDetails {
+  email: string;
+  displayName: string;
+}
+
+/** Looks up a pending password-reset token by its value, to greet the user before they set a new password. */
+export async function getResetToken(token: string): Promise<ResetTokenDetails> {
+  return request<ResetTokenDetails>('GET', `/auth/reset-password/${encodeURIComponent(token)}`);
+}
+
+/** Sets a new password via a reset token and signs the user straight in. */
+export async function resetPassword(token: string, password: string): Promise<Session> {
+  const data = await request<{ token: string; user: ApiUser; tenant: ApiTenant }>(
+    'POST',
+    '/auth/reset-password',
+    { token, password },
+  );
+  const next: Session = { token: data.token, user: data.user, tenant: data.tenant };
+  setSession(next, true);
+  return next;
+}
+
 // ── Organisations (platform-wide) ────────────────────────────────────────────
 
 export async function listOrgs(includeArchived = false): Promise<ApiTenant[]> {

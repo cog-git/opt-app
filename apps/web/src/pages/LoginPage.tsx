@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, Field, Logo, Pill } from '@opt/ui';
 import { MailIcon, EyeIcon } from '../icons';
 import { ApiError, login } from '../api';
@@ -106,9 +106,9 @@ export function LoginPage() {
               />
               Keep me signed in
             </label>
-            <a className="login__link" href="#">
+            <Link className="login__link" to="/forgot-password">
               Forgot password?
-            </a>
+            </Link>
           </div>
 
           {error ? (

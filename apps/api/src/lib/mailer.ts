@@ -52,3 +52,31 @@ export async function sendInviteEmail(input: InviteEmailInput): Promise<void> {
   }
   await t.sendMail({ from: FROM, to: input.to, subject, text });
 }
+
+export interface PasswordResetEmailInput {
+  to: string;
+  displayName: string;
+  resetUrl: string;
+}
+
+/**
+ * Sends the "reset your password" email for the forgot-password flow. If
+ * SMTP isn't configured (e.g. local dev), logs the reset link instead of
+ * throwing — this route must never fail for lack of mail config.
+ */
+export async function sendPasswordResetEmail(input: PasswordResetEmailInput): Promise<void> {
+  const subject = 'Reset your OPT Systems password';
+  const text =
+    `Hi ${input.displayName},\n\n` +
+    `We received a request to reset your OPT Systems password. Follow the link below to choose a new one:\n\n` +
+    `${input.resetUrl}\n\n` +
+    `This link expires in 1 hour. If you didn't request this, you can safely ignore this email.\n\n` +
+    `— OPT Systems\n${FROM}`;
+
+  const t = getTransporter();
+  if (!t) {
+    console.warn(`[mailer] SMTP not configured — password reset link for ${input.to}: ${input.resetUrl}`);
+    return;
+  }
+  await t.sendMail({ from: FROM, to: input.to, subject, text });
+}

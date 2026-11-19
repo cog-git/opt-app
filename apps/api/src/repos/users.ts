@@ -145,6 +145,69 @@ export async function acceptInvite(
   );
 }
 
+/** Sets a password-reset token for an existing user (see routes/auth.ts `/auth/forgot-password`). */
+export async function setResetToken(
+  db: Queryable,
+  tenantId: string,
+  userId: string,
+  token: string,
+  expiresAt: Date,
+): Promise<void> {
+  await db.query(
+    `UPDATE users
+        SET reset_token = $3, reset_token_expires_at = $4
+      WHERE tenant_id = $1 AND id = $2`,
+    [tenantId, userId, token, expiresAt.toISOString()],
+  );
+}
+
+export interface ResetTokenUser {
+  userId: string;
+  tenantId: string;
+  email: string;
+  displayName: string;
+  org: string;
+  subdomain: string;
+}
+
+/** Looks up a not-expired password-reset token by its value, across tenants. */
+export async function findUserByResetToken(db: Queryable, token: string): Promise<ResetTokenUser | null> {
+  const { rows } = await db.query(
+    `SELECT u.id AS user_id, u.tenant_id, u.email, u.display_name, t.org, t.subdomain
+       FROM users u
+       JOIN tenants t ON t.id = u.tenant_id
+      WHERE u.reset_token = $1
+        AND u.reset_token_expires_at > now()
+        AND u.archived_at IS NULL
+        AND t.archived_at IS NULL`,
+    [token],
+  );
+  const r = rows[0];
+  if (!r) return null;
+  return {
+    userId: String(r.user_id),
+    tenantId: String(r.tenant_id),
+    email: String(r.email),
+    displayName: String(r.display_name),
+    org: String(r.org),
+    subdomain: String(r.subdomain),
+  };
+}
+
+/** Completes a password reset: sets the new password and clears the token. */
+export async function clearResetTokenAndSetPassword(
+  db: Queryable,
+  userId: string,
+  passwordHash: string,
+): Promise<void> {
+  await db.query(
+    `UPDATE users
+        SET password_hash = $2, reset_token = NULL, reset_token_expires_at = NULL, updated_at = now()
+      WHERE id = $1`,
+    [userId, passwordHash],
+  );
+}
+
 export interface UpdateUserInput {
   displayName?: string;
   role?: UserRole;

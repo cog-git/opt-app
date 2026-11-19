@@ -2,6 +2,8 @@ import { Suspense, lazy } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { LoginPage } from './pages/LoginPage';
 import { AcceptInvitePage } from './pages/AcceptInvitePage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { KioskPage } from './pages/KioskPage';
 import { KioskConfirmPage } from './kiosk/KioskConfirmPage';
 import { KioskJobsPage } from './kiosk/KioskJobsPage';
@@ -52,6 +54,8 @@ export const router = createBrowserRouter(
     { path: '/', element: <Navigate to="/login" replace /> },
     { path: '/login', element: <LoginPage /> },
     { path: '/accept-invite', element: <AcceptInvitePage /> },
+    { path: '/forgot-password', element: <ForgotPasswordPage /> },
+    { path: '/reset-password', element: <ResetPasswordPage /> },
     { path: '/kiosk', element: <KioskPage /> },
     { path: '/kiosk/verify', element: lazyFace(<KioskVerifyPage />) },
     { path: '/kiosk/enrol', element: lazyFace(<KioskEnrolPage />) },
