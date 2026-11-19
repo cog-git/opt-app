@@ -21,13 +21,14 @@ export type OrgTier = 'clockin' | 'production';
 export type OrgStatus = 'active' | 'paused' | 'locked';
 export type UserRole = 'owner' | 'admin' | 'officer' | 'staff';
 
-// Display labels for roles. The "officer" tier is shown to users as "Manager";
-// the stored role value stays 'officer' so the API and permissions are untouched.
+// Display labels for roles. The "officer" tier is shown to users as "Manager"
+// and "staff" as "Kiosk Staff"; the stored role values stay 'officer'/'staff'
+// so the API and permissions are untouched.
 export const ROLE_LABEL: Record<UserRole, string> = {
   owner: 'Owner',
   admin: 'Admin',
   officer: 'Manager',
-  staff: 'Staff',
+  staff: 'Kiosk Staff',
 };
 
 export function roleLabel(role: string): string {
